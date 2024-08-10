@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Assignment Management</title>
+    <style>
+        /* Import Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+        /* General body styling */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #1e1e1e;
+            color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        h1, h2 {
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        /* Container styling for sections */
+        .container, .menu-container {
+            background-color: #333333;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 600px;
+            display: none;
+        }
+
+        .menu-container {
+            display: block;
+        }
+
+        /* Button styling */
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+        }
+
+        .btn-secondary {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #218838;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+        }
+
+        /* Input and select styling */
+        label {
+            font-weight: 500;
+            color: #cccccc;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            border: 1px solid #555555;
+            background-color: #222222;
+            color: #ffffff;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        /* Styling for the assignments list */
+        #assignmentsList {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #assignmentsList li {
+            background-color: #444444;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            box-shadow: 0 1px 5px rgba(255, 0, 0, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+
+            input, select, button {
+                font-size: 14px;
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Initial Menu -->
+    <div class="menu-container">
+        <h1>Student Assignment Management</h1>
+        <button class="btn-primary" onclick="showSection('viewAssignments')">View Assignments</button>
+        <button class="btn-secondary" onclick="showSection('addStudent')">Add Student</button>
+        <button class="btn-danger" onclick="showSection('removeStudent')">Remove Student</button>
+        <button class="btn-secondary" onclick="goToIndex()">Go Back</button>
+    </div>
+
+    <!-- Container for viewing assignments -->
+    <div class="container" id="viewAssignments">
+        <h2>Saved Assignments</h2>
+
+        <label for="filterStandardSelect">Select Standard:</label>
+        <select id="filterStandardSelect">
+            <option value="">All Standards</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+        </select>
+
+        <label for="filterSectionSelect">Select Section:</label>
+        <select id="filterSectionSelect">
+            <option value="">All Sections</option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+        </select>
+        <button class="btn-primary" onclick="displayAssignments()">Filter</button> 
+
+        <ul id="assignmentsList"></ul>
+        <button class="btn-secondary" onclick="goBack()">Go Back</button>
+    </div>
+
+    <!-- Container for adding a student -->
+    <div class="container" id="addStudent">
+        <h2>Add Student</h2>
+        <label for="studentName">Student Name:</label>
+        <input type="text" id="studentName">
+
+        <label for="standardSelect">Select Standard:</label>
+        <select id="standardSelect">
+            <option value="11">11</option>
+            <option value="12">12</option>
+        </select>
+
+        <label for="sectionSelect">Select Section:</label>
+        <select id="sectionSelect">
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+        </select>
+
+        <label for="genderSelect">Select Gender:</label>
+        <select id="genderSelect">
+            <option value="Female">Female</option> 
+            <option value="Male">Male</option>
+        </select>
+
+        <button class="btn-primary" onclick="saveStudent()">Save Assignment</button>
+        <button class="btn-secondary" onclick="goBack()">Go Back</button>
+    </div>
+
+    <!-- Container for removing a student -->
+    <div class="container" id="removeStudent">
+        <h2>Remove Student</h2>
+        <label for="removeStudentInput">Enter Student Name or Number:</label>
+        <input type="text" id="removeStudentInput">
+        <button class="btn-danger" onclick="removeStudent()">Remove Student</button>
+        <button class="btn-secondary" onclick="goBack()">Go Back</button>
+
+        <h3>Remove All Students by Standard & Section</h3>
+        <label for="removeStandardSelect">Select Standard:</label>
+        <select id="removeStandardSelect">
+            <option value="11">11</option>
+            <option value="12">12</option>
+        </select>
+
+        <label for="removeSectionSelect">Select Section:</label>
+        <select id="removeSectionSelect">
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+        </select>
+
+        <button class="btn-danger" onclick="removeByStandardAndSection()">Remove Selected Standard & Section Students</button>
+    </div>
+
+<script>
+    function showSection(sectionId) {
+        document.querySelector('.menu-container').style.display = 'none';
+        document.getElementById(sectionId).style.display = 'block';
+        if (sectionId === 'viewAssignments') {
+            displayAssignments();
+        }
+    }
+
+    function saveStudent() {
+        const studentName = document.getElementById('studentName').value;
+        const selectedStandard = document.getElementById('standardSelect').value;
+        const selectedSection = document.getElementById('sectionSelect').value;
+        const selectedGender = document.getElementById('genderSelect').value;
+
+        if (!studentName) {
+            alert('Please enter a student name');
+            return;
+        }
+
+        let assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+
+        const assignment = {
+            name: studentName,
+            standard: selectedStandard,
+            section: selectedSection,
+            gender: selectedGender
+        };
+
+        assignments.push(assignment);
+
+        // Sort the assignments 
+        assignments.sort((a, b) => {
+            if (a.gender !== b.gender) {
+                return a.gender === "Female" ? -1 : 1; 
+            }
+            if (a.standard !== b.standard) {
+                return a.standard - b.standard;
+            }
+            if (a.section !== b.section) {
+                return a.section.localeCompare(b.section);
+            }
+            return a.name.localeCompare(b.name);
+        });
+
+        // Regenerate IDs after sorting
+        regenerateIds(assignments);
+
+        localStorage.setItem('assignments', JSON.stringify(assignments));
+        document.getElementById('studentName').value = '';
+        displayAssignments();
+        alert('Student saved successfully!');
+    }
+
+    function regenerateIds(assignments) {
+        let currentStandard = "";
+        let currentSection = "";
+        let counter = 1;
+
+        assignments.forEach(assignment => {
+            if (assignment.standard !== currentStandard || assignment.section !== currentSection) {
+                counter = 1; // Reset counter for new standard/section
+                currentStandard = assignment.standard;
+                currentSection = assignment.section;
+            }
+
+            assignment.id = `${assignment.standard}${getSectionCode(assignment.section)}${String(counter).padStart(2, '0')}`;
+            counter++;
+        });
+    }
+
+    function goBack() {
+        document.querySelectorAll('.container').forEach(container => {
+            container.style.display = 'none';
+        });
+        document.querySelector('.menu-container').style.display = 'block';
+    }
+
+    function displayAssignments() {
+        const assignmentsList = document.getElementById('assignmentsList');
+        assignmentsList.innerHTML = '';
+
+        let assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+
+        const filterStandard = document.getElementById('filterStandardSelect').value;
+        const filterSection = document.getElementById('filterSectionSelect').value;
+
+        const filteredAssignments = assignments.filter(assignment => {
+            const standardMatch = filterStandard === '' || assignment.standard === filterStandard;
+            const sectionMatch = filterSection === '' || assignment.section === filterSection;
+            return standardMatch && sectionMatch;
+        });
+
+        // Sort the filtered assignments 
+        filteredAssignments.sort((a, b) => {
+            if (a.gender !== b.gender) {
+                return a.gender === "Female" ? -1 : 1; 
+            }
+            if (a.standard !== b.standard) {
+                return a.standard - b.standard;
+            }
+            if (a.section !== b.section) {
+                return a.section.localeCompare(b.section);
+            }
+            return a.name.localeCompare(b.name);
+        });
+
+        // Display the assignments with their unique ID
+        filteredAssignments.forEach(assignment => {
+            const listItem = document.createElement('li');
+            listItem.textContent = `${assignment.id}: ${assignment.name}`;
+            assignmentsList.appendChild(listItem);
+        });
+    }
+
+    function goToIndex() {
+        window.location.href = "index.html"; 
+    }
+
+    function getSectionCode(section) {
+        switch (section) {
+            case "A": return "1";
+            case "B": return "2";
+            case "C": return "3";
+            case "D": return "4";
+            default: return "0";
+        }
+    }
+
+    function removeStudent() {
+        const removeInput = document.getElementById('removeStudentInput').value.trim();
+        if (!removeInput) {
+            alert('Please enter a student name or number to remove');
+            return;
+        }
+
+        let assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+
+        // Find the index of the student to remove
+        const studentIndex = assignments.findIndex(assignment => 
+            assignment.name.toLowerCase() === removeInput.toLowerCase() || assignment.id === removeInput
+        );
+
+        if (studentIndex > -1) {
+            // Remove the student from the array
+            assignments.splice(studentIndex, 1);
+
+            // Re-assign IDs after removing a student
+            regenerateIds(assignments);
+
+            localStorage.setItem('assignments', JSON.stringify(assignments));
+            displayAssignments();
+            alert('Student removed successfully!');
+        } else {
+            alert('Student not found!');
+        }
+
+        document.getElementById('removeStudentInput').value = '';
+    }
+
+    function removeByStandardAndSection() {
+        const selectedStandard = document.getElementById('removeStandardSelect').value;
+        const selectedSection = document.getElementById('removeSectionSelect').value;
+
+        let assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+        let updatedAssignments = assignments.filter(assignment => {
+            return !(assignment.standard === selectedStandard && assignment.section === selectedSection);
+        });
+
+        if (assignments.length !== updatedAssignments.length) {
+            // Re-assign IDs after removing students by standard and section
+            regenerateIds(updatedAssignments);
+
+            localStorage.setItem('assignments', JSON.stringify(updatedAssignments));
+            displayAssignments();
+            alert('Selected standard and section students removed successfully!');
+        } else {
+            alert('No students found for the selected standard and section!');
+        }
+    }
+
+    window.onload = function() {
+        document.querySelector('.menu-container').style.display = 'block';
+    };
+</script>
+</body>
+</html>
