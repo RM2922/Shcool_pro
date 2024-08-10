@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduMarks Pro</title>
+    <style>
+        :root {
+            --primary-color: #ff6b6b; 
+            --background-color: #121212; 
+            --text-color: #f0f0f0; 
+        }
+
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+            text-align: center;
+            padding: 20px; /* Add padding for better spacing */
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px #ff6b6b, 0 0 20px #ff6b6b;
+            animation: textGlow 2s infinite alternate;
+            font-size: 2.5rem; /* Responsive font size for heading */
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-size: 1.2rem; /* Responsive font size for buttons */
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 0 10px rgba(255,107,107,0.5);
+            animation: buttonPulse 1.5s infinite alternate;
+            width: 80%; /* Make buttons occupy 80% of container width */
+            max-width: 300px; /* Limit maximum button width */
+        }
+
+        button:hover {
+            background-color: #ff8c8c;
+            box-shadow: 0 0 20px rgba(255,107,107,0.8);
+        }
+
+        /* Instructions styling */
+        .instructions {
+            margin-top: 15px;
+            font-size: 1rem; /* Responsive font size for instructions */
+            color: #ddd; 
+            animation: slideInUp 1s ease-out forwards;
+            opacity: 0;
+            max-width: 80%; /* Limit instruction width */
+        }
+
+        /* Star animation styles */
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration) linear infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Text glow animation */
+        @keyframes textGlow {
+            from { text-shadow: 0 0 10px #ff6b6b, 0 0 20px #ff6b6b; }
+            to { text-shadow: 0 0 20px #ff6b6b, 0 0 30px #ff6b6b; }
+        }
+
+        /* Button pulse animation */
+        @keyframes buttonPulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.05); }
+        }
+
+        /* Slide-in animation for instructions */
+        @keyframes slideInUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Media query for smaller screens */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem; 
+            }
+
+            button {
+                font-size: 1rem; 
+            }
+
+            .instructions {
+                font-size: 0.9rem; 
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>EduMarks Pro</h1>
+
+    <button onclick="location.href='edit.html'">Edit</button>
+    <p class="instructions">Add or remove student records, manage class lists.</p>
+
+    <button onclick="location.href='markentryform.html'">Mark Entry</button>
+    <p class="instructions">Input and analyze student marks, generate reports.</p>
+
+    <script>
+        // Create stars (same as before)
+        for (let i = 0; i < 350; i++) {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            star.style.width = `${Math.random() * 3 + 1}px`;
+            star.style.height = star.style.width;
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.top = `${Math.random() * 100}%`;
+            star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
+            document.body.appendChild(star);
+        }
+    </script>
+
+</body>
+</html>
