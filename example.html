@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduMarks Pro: Interactive Grade Calculator</title>
+    <style>
+    :root {
+        --primary-color: #ff6b6b;
+        --secondary-color: #ff4081;
+        --background-color: #121212;
+        --text-color: #f0f0f0;
+        --card-bg: #1e1e1e;
+    }
+
+    body {
+        font-family: 'Roboto', Arial, sans-serif;
+        background-color: var(--background-color);
+        color: var(--text-color);
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    header {
+        background-color: var(--primary-color);
+        color: white;
+        text-align: center;
+        padding: 1rem;
+        box-shadow: 0 2px 4px rgba(255,107,107,0.3);
+    }
+
+    h1, h2, h3 {
+        margin-bottom: 1rem;
+    }
+
+    .card {
+        background-color: var(--card-bg);
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(255,107,107,0.2);
+        padding: 20px;
+        margin-bottom: 20px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 8px rgba(255,107,107,0.3);
+    }
+
+    input[type="text"], input[type="number"], select {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #444;
+        border-radius: 4px;
+        box-sizing: border-box;
+        background-color: #333;
+        color: var(--text-color);
+    }
+
+    button {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        margin: 5px;
+    }
+
+    button:hover {
+        background-color: #ff8c8c;
+        box-shadow: 0 0 10px rgba(255,107,107,0.5);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        display: none;
+    }
+
+    th, td {
+        border: 1px solid #444;
+        padding: 12px;
+        text-align: left;
+    }
+
+    th {
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+    .chart-container {
+        max-width: 600px;
+        margin: 20px auto;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .fade-in {
+        animation: fadeIn 0.5s ease-in;
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            padding: 10px;
+        }
+    }
+
+    .glow {
+        box-shadow: 0 0 10px rgba(255,107,107,0.5);
+    }
+
+    button.glow:hover {
+        box-shadow: 0 0 20px rgba(255,107,107,0.8);
+    }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .summary-item {
+        background-color: var(--card-bg);
+        padding: 15px;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 0 10px rgba(255,107,107,0.3);
+        overflow: hidden;
+    }
+
+    .summary-item h3 {
+        color: var(--primary-color);
+        margin-bottom: 10px;
+    }
+
+    .summary-item p {
+        font-size: 1.2em;
+        font-weight: bold;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .slide-in {
+        animation: slideIn 0.5s ease-out forwards;
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+    .pulse {
+        animation: pulse 2s infinite;
+    }
+
+    .table-buttons {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 20px 0;
+    }
+
+    .top-students {
+        background-color: #2c2c2c;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 20px;
+    }
+
+    .top-student {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        border-bottom: 1px solid #444;
+    }
+
+    .top-student:last-child {
+        border-bottom: none;
+    }
+
+    .medal {
+        font-size: 1.5em;
+        margin-right: 10px;
+    }
+
+    @keyframes numberIncrement {
+        from {
+            content: "0";
+        }
+        to {
+            content: attr(data-value);
+        }
+    }
+
+    .animate-number::after {
+        content: attr(data-value);
+        animation: numberIncrement 2s steps(100) forwards;
+    }
+        /* Add this CSS for the number animation */
+        @keyframes countUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .count-up {
+            opacity: 0;
+            transform: translateY(-10px);
+            animation: countUp 0.5s ease-in-out forwards;
+        }
+
+    .chart-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* Adjust minmax for chart size */
+        gap: 20px;
+    }
+
+    /* Center the form */
+    #studentForm form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* Style for subject buttons */
+    .subject-button-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .subject-button {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        margin: 5px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        flex: 1 0 150px; /* Adjust button width */
+        text-align: center;
+    }
+
+    .subject-button:hover {
+        background-color: #ff8c8c;
+        box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+    }
+
+    /* Style for subject result cards */
+    .subject-result-card {
+        background-color: var(--card-bg);
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(255,107,107,0.2);
+        padding: 20px;
+        margin-bottom: 20px;
+        display: none; /* Initially hide subject results */
+    }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script> 
+</head>
+<body>
+    <header class="glow">
+        <h1>EduMarks Pro</h1>
+        <p>Interactive Grade Calculator for Educators</p>
+    </header>
+
+    <div class="container">
+        <div class="card fade-in glow" id="classSetup">
+            <h2>Class Setup</h2>
+            <form id="classSectionForm">
+                <label for="standard">Select Class:</label>
+                <select id="standard" name="standard" required>
+                    <option value="" disabled selected>Select Class</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                </select>
+
+                <label for="section">Select Section:</label>
+                <select id="section" name"section" required>
+                    <option value="" disabled selected>Select Section</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                </select>
+                <button type="button" onclick="showSubjectSelection()" class="glow">Next</button>
+            </form>
+        </div>
+        <div class="card fade-in glow" id="subjectSelection" style="display: none;">
+            <h2>Subject Selection</h2>
+            <form>
+                <label for="subjectType">Select Subject:</label>
+                <select id="subjectType" name="subjectType" required>
+                    <option value="" disabled selected>Select Subject</option>
+                    <option value="allSubjects">All Subjects</option>
+                    <option value="physics">Physics</option>
+                    <option value="chemistry">Chemistry</option>
+                    <option value="mathematics">Mathematics</option>
+                    <option value="computerScience">Computer Science</option>
+                    <option value="biology">Biology</option>
+                    <option value="english">English</option>
+                    <option value="tamil">Tamil</option>
+                </select>
+                <button type="button" onclick="showExamSelection()" class="glow">Next</button>
+            </form>
+        </div>
+        <div class="card fade-in glow" id="examSelection" style="display:none;">
+            <h2>Exam Selection</h2>
+            <form>
+                <label for="examType">Select Exam Type:</label>
+                <select id="examType" name="examType" required>
+                    <option value="" disabled selected>Select Exam</option>
+                    <option value="firstMidTerm">First Mid Term</option>
+                    <option value="secondMidTerm">Second Mid Term</option>
+                    <option value="thirdMidTerm">Third Mid Term</option>
+                    <option value="quarterly">Quarterly</option>
+                    <option value="halfYearly">Half Yearly</option>
+                    <option value="revision">Revision Exam</option>
+                </select>
+                <button type="button" onclick="startEntry()" class="glow">Next</button>
+            </form>
+        </div>
+        <div class="card fade-in glow" id="noStudentsMessage" style="display:none;">
+            <h2>No Students Found</h2>
+            <p>Please add students to the selected class and section.</p>
+            <a href="index.html" class="glow" style="text-decoration: none;">
+                <button class="glow">Add Students</button>
+            </a>
+        </div>
+
+        <div class="card fade-in glow" id="studentForm" style="display:none;">
+            <h2>Student Grade Entry</h2>
+            <h3 id="studentCount"></h3>
+            <form id="markEntryForm">
+                <p><span style="color: var(--primary-color);">Exam No:</span> <span id="studentExamNo"></span></p>
+                <p><span style="color: var(--primary-color);">Name:</span> <span id="studentNameDisplay"></span></p>
+
+                <div id="subjectMarksFields">
+                    </div>
+
+                <button type="button" id="nextButton" onclick="saveStudent()" class="glow">Next Student</button>
+                <button type="button" id="finishButton" style="display:none;" onclick="finishEntry()" class="glow">Finish</button>
+            </form>
+        </div>
+        <div id="subjectResultsContainer">
+            </div>
+        <div class="card fade-in glow" id="resultsCard" style="display:none;">
+            <h2>Class Results Summary</h2>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <h3>Total Marks</h3>
+                    <p id="totalMarks" class="slide-in  count-up" data-value="0"></p>
+                </div>
+                <div class="summary-item">
+                    <h3>Total Average Percentage</h3>
+                    <p id="averagePercentage" class="slide-in  count-up" data-value="0"></p>
+                </div>
+                <div class="summary-item">
+                    <h3>Pass Percentage</h3>
+                    <p id="passPercentage" class="slide-in  count-up" data-value="0"></p>
+                </div>
+                <div class="summary-item">
+                    <h3>Fail Percentage</h3>
+                    <p id="failPercentage" class="slide-in  count-up" data-value="0"></p>
+                </div>
+                <div class="summary-item">
+                    <h3>Passed Students</h3>
+                    <p id="passCount" class="slide-in  count-up" data-value="0"></p>
+                </div>
+                <div class="summary-item">
+                    <h3>Failed Students</h3>
+                    <p id="failCount" class="slide-in count-up" data-value="0"></p>
+                </div>
+                <div class="summary-item">
+                    <h3>Maximum Mark</h3>
+                    <p id="maxMark" class="slide-in count-up" data-value="0"></p>
+                </div>
+                <div class="summary-item">
+                    <h3>Minimum Mark</h3>
+                    <p id="minMark" class="slide-in  count-up" data-value="0"></p>
+                </div>
+            </div>
+            <div class="top-students">
+                <h3>Top 3 Performers</h3>
+                <div id="topStudentsContainer"></div>
+            </div>
+            <div class="subject-button-container" id="subjectButtonsContainer"></div>
+            <div class="subject-button-container" id="tableButtonsContainer"></div>
+
+            <table id="passedTable">
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Mark</th>
+                    </tr>
+                </thead>
+                <tbody id="passedTableBody"></tbody>
+            </table>
+
+            <table id="failedTable">
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Mark</th>
+                    </tr>
+                </thead>
+                <tbody id="failedTableBody"></tbody>
+            </table>
+
+            <table id="allStudentsTable">
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Mark</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="allStudentsTableBody"></tbody>
+            </table>
+
+            <button id="downloadButton" onclick="downloadExcel()" class="glow">Download Excel Report</button>
+        </div>
+        <div class="chart-grid" id="subjectChartsContainer" style="display:none;">
+            </div>
+        <div class="card fade-in glow chart-container" id="chartContainer" style="display:none;">
+            <h2>Performance Distribution</h2>
+            <canvas id="myChart"></canvas>
+        </div>
+        <div class="card fade-in glow chart-container" id="subjectFailChartContainer" style="display:none;">
+            <h2>Subject-wise Fail Distribution</h2>
+            <canvas id="subjectFailChart"></canvas>
+        </div>
+    </div>
+    <script>
+        let currentStudent = 0;
+        let totalStudents = 0;
+        let students = [];
+        let standard = '';
+        let section = '';
+        let examType = '';
+        let subjectType = ''; 
+        let chart;
+        let subjectFailChart; 
+        let subjectResultVisibility = {}; 
+
+        function showSubjectSelection() {
+            standard = document.getElementById('standard').value;
+            section = document.getElementById('section').value;
+
+            if (standard && section) {
+                document.getElementById('classSetup').style.display = 'none';
+                document.getElementById('subjectSelection').style.display = 'block';
+            } else {
+                alert("Please select both class and section.");
+            }
+        }
+
+        function showExamSelection() {
+            subjectType = document.getElementById('subjectType').value; 
+
+            if (!subjectType) {
+                alert("Please select a subject.");
+                return;
+            }
+
+            document.getElementById('subjectSelection').style.display = 'none';
+            document.getElementById('examSelection').style.display = 'block';
+        }
+
+        function startEntry() {
+            examType = document.getElementById('examType').value;
+
+            if (!examType) {
+                alert("Please select an exam type.");
+                return;
+            }
+
+            const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+            students = assignments.filter(student => student.standard === standard && student.section === section);
+
+            totalStudents = students.length;
+
+            if (totalStudents === 0) {
+                document.getElementById('examSelection').style.display = 'none';
+                document.getElementById('noStudentsMessage').style.display = 'block';
+            } else {
+                currentStudent = 0;
+                document.getElementById('examSelection').style.display = 'none';
+                document.getElementById('studentForm').style.display = 'block';
+                createSubjectMarkFields();
+                showNextStudentForm();
+            }
+        }
+
+        function showNextStudentForm() {
+            if (currentStudent < totalStudents) {
+                document.getElementById('studentCount').textContent = `Student ${currentStudent + 1} of ${totalStudents}`;
+                document.getElementById('studentExamNo').textContent = students[currentStudent].id;
+                document.getElementById('studentNameDisplay').textContent = students[currentStudent].name;
+
+                // Clear the mark inputs for the next student
+                const markInputs = document.querySelectorAll('#subjectMarksFields input');
+                markInputs.forEach(input => (input.value = ''));
+
+                document.getElementById('nextButton').style.display = 'inline-block';
+                document.getElementById('finishButton').style.display = 'none';
+            } else {
+                calculateAndDisplay();
+            }
+        }
+
+        function createSubjectMarkFields() {
+            const subjectMarksFields = document.getElementById('subjectMarksFields');
+            subjectMarksFields.innerHTML = ''; // Clear any existing fields
+
+            let subjects = ['mathematics', 'physics', 'chemistry', 'english', 'tamil'];
+            if (subjectType === 'allSubjects') {
+                subjects.push((section === 'A' || section === 'B') ? 'computerScience' : 'biology');
+            } else {
+                // If a single subject is selected, only add that subject
+                subjects = [subjectType];
+            }
+
+            subjects.forEach(subject => {
+                const label = document.createElement('label');
+                label.textContent = `${subject.charAt(0).toUpperCase() + subject.slice(1)}:`;
+                subjectMarksFields.appendChild(label);
+
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.id = `mark_${subject}`;
+                input.name = `mark_${subject}`;
+                input.required = true;
+                input.min = '0';
+                input.max = isMidTermExam() ? '50' : '100'; 
+                subjectMarksFields.appendChild(input);
+            });
+        }
+
+        function isMidTermExam() {
+            return examType === 'firstMidTerm' || examType === 'secondMidTerm' || examType === 'thirdMidTerm';
+        }
+
+        function saveStudent() {
+            const markInputs = document.querySelectorAll('#subjectMarksFields input');
+            let failedSubjects = 0;
+            let totalMarks = 0;
+
+            markInputs.forEach(input => {
+                let mark = parseFloat(input.value);
+                const subject = input.id.replace('mark_', '');
+
+                if (isNaN(mark) || mark < 0 || mark > parseInt(input.max)) {
+                    alert(`Please enter a valid mark for ${subject} (0-${input.max}).`);
+                    return;
+                }
+                // Double the mark for mid-term exams
+                if (isMidTermExam()) {
+                    mark *= 2;
+                }
+
+                students[currentStudent][subject] = mark;
+                totalMarks += mark;
+                if (mark < 35) {
+                    failedSubjects++;
+                }
+            });
+
+            students[currentStudent].totalMarks = totalMarks; 
+            students[currentStudent].status = failedSubjects > 0 ? 'Fail' : 'Pass';
+            students[currentStudent].failedSubjects = failedSubjects;
+
+            currentStudent++;
+
+            if (currentStudent < totalStudents) {
+                showNextStudentForm();
+            } else {
+                document.getElementById('nextButton').style.display = 'none';
+                document.getElementById('finishButton').style.display = 'inline-block';
+            }
+        }
+        function finishEntry() {
+            calculateAndDisplay();
+        }
+
+        function calculateAndDisplay() {
+            students.sort((a, b) => b.totalMarks - a.totalMarks);
+
+            const passedTableBody = document.getElementById('passedTableBody');
+            const failedTableBody = document.getElementById('failedTableBody');
+            const allStudentsTableBody = document.getElementById('allStudentsTableBody');
+            passedTableBody.innerHTML = '';
+            failedTableBody.innerHTML = '';
+            allStudentsTableBody.innerHTML = '';
+
+            let totalMarks = 0;
+            let passCount = 0;
+            let failCount = 0;
+            let maxMark = -Infinity;
+            let minMark = Infinity;
+
+            const subjects = ['mathematics', 'physics', 'chemistry', 'english', 'tamil', (section === 'A' || section === 'B') ? 'computerScience' : 'biology'];
+            const subjectFailCounts = {}; 
+            const subjectData = {}; 
+
+            students.forEach(student => {
+                totalMarks += student.totalMarks;
+                if (student.status === 'Pass') {
+                    passCount++;
+                    passedTableBody.innerHTML += `
+                        <tr>
+                            <td>${student.name}</td>
+                            <td>${student.totalMarks}</td>
+                        </tr>`;
+                } else {
+                    failCount++;
+                    failedTableBody.innerHTML += `
+                        <tr>
+                            <td>${student.name}</td>
+                            <td>${student.totalMarks}</td>
+                        </tr>`;
+                }
+                allStudentsTableBody.innerHTML += `
+                    <tr>
+                        <td>${student.name}</td>
+                        <td>${student.totalMarks}</td>
+                        <td>${student.status} (${student.failedSubjects} subject${student.failedSubjects > 1 ? 's' : ''})</td> 
+                    </tr>`;
+                maxMark = Math.max(maxMark, student.totalMarks);
+                minMark = Math.min(minMark, student.totalMarks);
+
+                if (subjectType === 'allSubjects') {
+                    subjects.forEach(subject => {
+                        if (student[subject] < 35) {
+                            subjectFailCounts[subject] = (subjectFailCounts[subject] || 0) + 1;
+                        }
+
+                        // Store subject data
+                        if (!subjectData[subject]) {
+                            subjectData[subject] = {
+                                totalMarks: 0,
+                                passCount: 0,
+                                failCount: 0,
+                                maxMark: -Infinity,
+                                minMark: Infinity
+                            };
+                        }
+                        subjectData[subject].totalMarks += student[subject];
+                        if (student[subject] >= 35) {
+                            subjectData[subject].passCount++;
+                        } else {
+                            subjectData[subject].failCount++;
+                        }
+                        subjectData[subject].maxMark = Math.max(subjectData[subject].maxMark, student[subject]);
+                        subjectData[subject].minMark = Math.min(subjectData[subject].minMark, student[subject]);
+                    });
+                }
+            });
+
+            const numSubjects = subjectType === 'allSubjects' ? subjects.length : 1;
+            const totalAveragePercentage = ((totalMarks / (students.length * (isMidTermExam() ? 100 : 100) * numSubjects)) * 100).toFixed(2); 
+            const passPercentage = ((passCount / students.length) * 100).toFixed(2);
+            const failPercentage = ((failCount / students.length) * 100).toFixed(2);
+
+            animateValue('totalMarks', totalMarks);
+            animateValue('averagePercentage', totalAveragePercentage, '%');
+            animateValue('passPercentage', passPercentage, '%');
+            animateValue('failPercentage', failPercentage, '%');
+            animateValue('passCount', passCount);
+            animateValue('failCount', failCount);
+            animateValue('maxMark', maxMark);
+            animateValue('minMark', minMark);
+
+            displayTopStudents();
+
+            document.getElementById('studentForm').style.display = 'none';
+            document.getElementById('resultsCard').style.display = 'block';
+
+            if (subjectType === 'allSubjects') {
+                displaySubjectCharts(subjectFailCounts);
+                displaySubjectFailChart();
+                createSubjectResultCards(subjectData);
+                createSubjectButtons(subjects);
+                createTableButtons();
+            } else {
+                displayPieChart(subjectType);
+                createTableButtons();
+            }
+        }
+
+        function animateValue(id, value, suffix = '') {
+            const element = document.getElementById(id);
+            let startTimestamp = null;
+            const duration = 1000;
+
+            function step(timestamp) {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                element.textContent = Math.floor(progress * value) + suffix;
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                } else {
+                    element.textContent = value + suffix; 
+                    element.classList.add('count-up'); 
+                }
+            }
+
+            window.requestAnimationFrame(step);
+        }
+        function downloadExcel() {
+    const wb = XLSX.utils.book_new();
+
+    // --- Class Summary Sheet ---
+    const classSummaryData = [
+        ['Class', standard],
+        ['Section', section],
+        ['Exam Type', examType],
+        ['Subject', subjectType === 'allSubjects' ? 'All' : subjectType.charAt(0).toUpperCase() + subjectType.slice(1)],
+        [], // Empty row for spacing
+        ['Total Marks', document.getElementById('totalMarks').textContent],
+        ['Total Average Percentage', document.getElementById('averagePercentage').textContent],
+        ['Pass Percentage', document.getElementById('passPercentage').textContent],
+        ['Fail Percentage', document.getElementById('failPercentage').textContent],
+        ['Passed Students', document.getElementById('passCount').textContent],
+        ['Failed Students', document.getElementById('failCount').textContent],
+        ['Maximum Mark', document.getElementById('maxMark').textContent],
+        ['Minimum Mark', document.getElementById('minMark').textContent]
+    ];
+    const classSummarySheet = XLSX.utils.aoa_to_sheet(classSummaryData);
+    XLSX.utils.book_append_sheet(wb, classSummarySheet, "Class Summary");
+
+    // --- Student Data Sheet ---
+    let studentDataHeaders = ['Exam No', 'Student Name'];
+    const subjects = ['mathematics', 'physics', 'chemistry', 'english', 'tamil', (section === 'A' || section === 'B') ? 'computerScience' : 'biology'];
+    if (subjectType === 'allSubjects') {
+        studentDataHeaders = studentDataHeaders.concat(subjects.map(s => s.charAt(0).toUpperCase() + s.slice(1)), 'Total Marks', 'Status');
+    } else {
+        studentDataHeaders.push(subjectType.charAt(0).toUpperCase() + subjectType.slice(1), 'Status');
+    }
+    const studentData = [studentDataHeaders];
+    students.forEach(student => {
+        let row = [student.id, student.name];
+        if (subjectType === 'allSubjects') {
+            row = row.concat(subjects.map(subject => student[subject]), student.totalMarks, student.status);
+        } else {
+            row.push(student[subjectType], student.status);
+        }
+        studentData.push(row);
+    });
+    const studentSheet = XLSX.utils.aoa_to_sheet(studentData);
+    XLSX.utils.book_append_sheet(wb, studentSheet, "Student Data");
+
+    // --- Subject Summary Sheet (Only if 'All Subjects' is selected) ---
+    if (subjectType === 'allSubjects') {
+        const subjectSummaryData = [
+            ['Subject', 'Total Marks', 'Average Percentage', 'Pass Percentage', 'Fail Percentage', 'Passed Students', 'Failed Students', 'Maximum Mark', 'Minimum Mark']
+        ];
+        subjects.forEach(subject => {
+            const data = calculateSubjectSummary(subject);
+            subjectSummaryData.push([
+                subject.charAt(0).toUpperCase() + subject.slice(1),
+                data.totalMarks,
+                data.averagePercentage + '%',
+                data.passPercentage + '%',
+                data.failPercentage + '%',
+                data.passCount,
+                data.failCount,
+                data.maxMark,
+                data.minMark
+            ]);
+        });
+        const subjectSummarySheet = XLSX.utils.aoa_to_sheet(subjectSummaryData);
+        XLSX.utils.book_append_sheet(wb, subjectSummarySheet, "Subject Summary");
+    }
+
+    // --- Generate File Name ---
+    const fileName = `ClassResults_Std${standard}_Sec${section}_${examType.replace(/([A-Z])/g, ' $1').trim()}_${subjectType === 'allSubjects' ? 'AllSubjects' : subjectType.charAt(0).toUpperCase() + subjectType.slice(1)}.xlsx`;
+
+    XLSX.writeFile(wb, fileName);
+}
+
+// Helper function to calculate subject summary
+function calculateSubjectSummary(subject) {
+    let totalMarks = 0;
+    let passCount = 0;
+    let failCount = 0;
+    let maxMark = -Infinity;
+    let minMark = Infinity;
+
+    students.forEach(student => {
+        const mark = student[subject];
+        totalMarks += mark;
+        if (mark >= 35) {
+            passCount++;
+        } else {
+            failCount++;
+        }
+        maxMark = Math.max(maxMark, mark);
+        minMark = Math.min(minMark, mark);
+    });
+
+    return {
+        totalMarks: totalMarks,
+        averagePercentage: ((totalMarks / (students.length * 100)) * 100).toFixed(2),
+        passPercentage: ((passCount / students.length) * 100).toFixed(2),
+        failPercentage: ((failCount / students.length) * 100).toFixed(2),
+        passCount: passCount,
+        failCount: failCount,
+        maxMark: maxMark,
+        minMark: minMark
+    };
+}
+        function formatName(name) {
+            return name.split(' ')
+                       .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                       .join(' ');
+        }
+
+        function displayPieChart(subject) {
+            const passCount = students.filter(student => student[subject] >= 35).length;
+            const failCount = students.filter(student => student[subject] < 35).length;
+
+            document.getElementById('chartContainer').style.display = 'block';
+
+            const ctx = document.getElementById('myChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Pass', 'Fail'],
+                    datasets: [{
+                        data: [passCount, failCount],
+                        backgroundColor: ['#4caf50', '#f44336'] 
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: '#f0f0f0'
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: `${subject.charAt(0).toUpperCase() + subject.slice(1)} - Pass vs Fail Distribution`,
+                            color: '#f0f0f0'
+                        }
+                    }
+                }
+            });
+        }
+        function displaySubjectCharts(subjectFailCounts) {
+            const chartContainer = document.getElementById('subjectChartsContainer');
+            chartContainer.innerHTML = '';
+            chartContainer.style.display = 'grid'; 
+
+            Object.keys(subjectFailCounts).forEach(subject => {
+                const subjectPassCount = students.length - subjectFailCounts[subject];
+
+                const canvas = document.createElement('canvas');
+                canvas.id = `chart_${subject}`;
+                chartContainer.appendChild(canvas);
+
+                const ctx = canvas.getContext('2d');
+                new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Pass', 'Fail'],
+                        datasets: [{
+                            data: [subjectPassCount, subjectFailCounts[subject]],
+                            backgroundColor: ['#4caf50', '#f44336'] 
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    color: '#f0f0f0'
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: `${subject.charAt(0).toUpperCase() + subject.slice(1)} - Pass vs Fail Distribution`,
+                                color: '#f0f0f0'
+                            }
+                        }
+                    }
+                });
+            });
+        }
+
+        function displaySubjectFailChart() {
+            const failDistribution = {};
+            students.forEach(student => {
+                const failedSubjects = student.failedSubjects || 0;
+                if (failDistribution[failedSubjects]) {
+                    failDistribution[failedSubjects]++;
+                } else {
+                    failDistribution[failedSubjects] = 1;
+                }
+            });
+
+            const labels = Object.keys(failDistribution).map(key => `${key} Subject${key > 1 ? 's' : ''}`);
+            const data = Object.values(failDistribution);
+
+            document.getElementById('subjectFailChartContainer').style.display = 'block';
+            const ctx = document.getElementById('subjectFailChart').getContext('2d');
+            subjectFailChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: [
+                            '#4caf50', 
+                            '#ffeb3b',
+                            '#ff9800', 
+                            '#f44336', 
+                            '#9c27b0', 
+                            '#673ab7'  
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: '#f0f0f0'
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Distribution of Students Failing in Subjects',
+                            color: '#f0f0f0'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    const value = context.parsed || 0;
+                                    return label + value + ' student' + (value > 1 ? 's' : '');
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createSubjectResultCards(subjectData) {
+            const subjectResultsContainer = document.getElementById('subjectResultsContainer');
+            subjectResultsContainer.innerHTML = ''; // Clear previous cards
+
+            Object.keys(subjectData).forEach(subject => {
+                const data = subjectData[subject];
+                subjectResultVisibility[subject] = false; // Initially hide the result
+
+                const card = document.createElement('div');
+                card.classList.add('card', 'fade-in', 'glow', 'subject-result-card');
+                card.id = `subjectResult_${subject}`;
+                card.innerHTML = `
+                    <h3>${subject.charAt(0).toUpperCase() + subject.slice(1)} Results</h3>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <h4>Total Marks</h4>
+                            <p class="count-up">${data.totalMarks}</p> 
+                        </div>
+                        <div class="summary-item">
+                            <h4>Average Percentage</h4>
+                            <p class="count-up">${((data.totalMarks / (students.length * 100)) * 100).toFixed(2)}%</p>
+                        </div>
+                        <div class="summary-item">
+                            <h4>Pass Percentage</h4>
+                            <p class="count-up">${((data.passCount / students.length) * 100).toFixed(2)}%</p>
+                        </div>
+                        <div class="summary-item">
+                            <h4>Fail Percentage</h4>
+                            <p class="count-up">${((data.failCount / students.length) * 100).toFixed(2)}%</p>
+                        </div>
+                        <div class="summary-item">
+                            <h4>Passed Students</h4>
+                            <p class="count-up">${data.passCount}</p>
+                        </div>
+                        <div class="summary-item">
+                            <h4>Failed Students</h4>
+                            <p class="count-up">${data.failCount}</p>
+                        </div>
+                        <div class="summary-item">
+                            <h4>Maximum Mark</h4>
+                            <p class="count-up">${data.maxMark}</p> 
+                        </div>
+                        <div class="summary-item">
+                            <h4>Minimum Mark</h4>
+                            <p class="count-up">${data.minMark}</p> 
+                        </div>
+                    </div>
+                    <div class="top-students">
+                        <h3>Top 3 Performers</h3>
+                        <div id="topStudentsContainer_${subject}"></div>
+                    </div>
+                `;
+                subjectResultsContainer.appendChild(card);
+
+                // Display top 3 performers for the subject
+                displayTopStudentsForSubject(subject, data);
+            });
+        }
+
+        function createSubjectButtons(subjects) {
+            const subjectButtonsContainer = document.getElementById('subjectButtonsContainer');
+            subjectButtonsContainer.innerHTML = ''; // Clear previous buttons
+
+            subjects.forEach(subject => {
+                const button = document.createElement('button');
+                button.classList.add('subject-button');
+                button.textContent = subject.charAt(0).toUpperCase() + subject.slice(1);
+                button.addEventListener('click', () => {
+                    toggleSubjectResult(subject);
+                });
+                subjectButtonsContainer.appendChild(button);
+            });
+        }
+
+        function createTableButtons() {
+            const tableButtonsContainer = document.getElementById('tableButtonsContainer');
+            tableButtonsContainer.innerHTML = ''; // Clear previous buttons
+
+            const tableIds = ['passedTable', 'failedTable', 'allStudentsTable'];
+            tableIds.forEach(tableId => {
+                const button = document.createElement('button');
+                button.classList.add('subject-button'); // Use the same class as subject buttons
+                button.textContent = `Show ${tableId.replace('Table', '')} Students Table`;
+                button.addEventListener('click', () => {
+                    toggleTable(tableId);
+                });
+                tableButtonsContainer.appendChild(button);
+            });
+        }
+
+        function toggleSubjectResult(subject) {
+            const cardId = `subjectResult_${subject}`;
+            const card = document.getElementById(cardId);
+            
+            // Toggle visibility
+            subjectResultVisibility[subject] = !subjectResultVisibility[subject];
+            card.style.display = subjectResultVisibility[subject] ? 'block' : 'none';
+        }
+
+        function toggleTable(tableId) {
+            const table = document.getElementById(tableId);
+            const button = document.querySelector(`.table-buttons button[onclick="toggleTable('${tableId}')"]`);
+
+            // Toggle visibility of the selected table
+            if (table.style.display === 'table') {
+                table.style.display = 'none';
+                button.textContent = `Show ${tableId.replace('Table', '')} Students Table`;
+            } else {
+                table.style.display = 'table';
+                button.textContent = `Hide ${tableId.replace('Table', '')} Students Table`;
+            }
+        }
+
+        function displayTopStudents() {
+            const topStudentsContainer = document.getElementById('topStudentsContainer');
+            topStudentsContainer.innerHTML = '';
+
+            const topThree = students.slice(0, 3);
+            const medals = ['🥇', '🥈', '🥉'];
+
+            topThree.forEach((student, index) => {
+                const studentElement = document.createElement('div');
+                studentElement.className = 'top-student';
+                studentElement.innerHTML = `
+                    <span class="medal">${medals[index]}</span>
+                    <span>${student.name}</span>
+                    <span>${student.totalMarks}</span>
+                `;
+                topStudentsContainer.appendChild(studentElement);
+            });
+        }
+
+        function displayTopStudentsForSubject(subject, subjectData) {
+            const topStudentsContainer = document.getElementById(`topStudentsContainer_${subject}`);
+
+            // Sort students by marks in the current subject
+            const sortedStudents = students.slice().sort((a, b) => b[subject] - a[subject]);
+            const topThree = sortedStudents.slice(0, 3);
+            const medals = ['🥇', '🥈', '🥉'];
+
+            topThree.forEach((student, index) => {
+                const studentElement = document.createElement('div');
+                studentElement.className = 'top-student';
+                studentElement.innerHTML = `
+                    <span class="medal">${medals[index]}</span>
+                    <span>${student.name}</span>
+                    <span>${student[subject]}</span> 
+                `;
+                topStudentsContainer.appendChild(studentElement);
+            });
+        }
+
+        // Add event listeners for chart interactivity
+        document.getElementById('myChart').addEventListener('mousemove', (evt) => {
+            const activePoints = chart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
+            if (activePoints.length) {
+                const firstPoint = activePoints[0];
+                const label = chart.data.labels[firstPoint.index];
+                const value = chart.data.datasets[firstPoint.datasetIndex].data[firstPoint.index];
+                console.log(label, value);
+            }
+        });
+
+        document.getElementById('subjectFailChart').addEventListener('mousemove', (evt) => {
+            const activePoints = subjectFailChart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
+            if (activePoints.length) {
+                const firstPoint = activePoints[0];
+                const label = subjectFailChart.data.labels[firstPoint.index];
+                const value = subjectFailChart.data.datasets[firstPoint.datasetIndex].data[firstPoint.index];
+                console.log(label, value);
+            }
+        });
+
+    </script>
+</body>
+</html>
